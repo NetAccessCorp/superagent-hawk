@@ -1,6 +1,6 @@
 {
   "name": "superagent-hawk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "adds hawk to superagent",
   "main": "index.js",
   "scripts": {
