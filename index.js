@@ -55,20 +55,20 @@ module.exports = function (superagent) {
     return hawk_header.artifacts;
   };
 
-  var verify_hawk_response = function(result, credential, artifacts) {
+  var verify_hawk_response = function(err, res, credential, artifacts) {
     var hawk_options = {
-      payload: result.res.text,
+      payload: res.text,
       required: true
     }
 
     var verified =  hawk.client.authenticate(
-        result,
+        res,
         credential,
         artifacts,
         hawk_options);
 
     if (!verified) {
-      result.error = new Error(
+      res.error = new Error(
           'Hawk response signature verification failed');
     }
   }
@@ -84,7 +84,9 @@ module.exports = function (superagent) {
       if (this._enable_hawk_response_verification) {
         var hawk_credential = this._hawk_credential;
         var wrapped_response_handler = function(err, res) {
-          verify_hawk_response(res, hawk_credential, artifacts);
+          if (res) {
+            verify_hawk_response(err, res, hawk_credential, artifacts);
+          }
           if (2 == response_handler.length) return response_handler(err, res);
           if (err) return this.emit('error', err);
           return response_handler(res);
